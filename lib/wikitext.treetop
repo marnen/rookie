@@ -1,5 +1,33 @@
 grammar Wikitext
   rule document
+    (heading_sequence / paragraph_sequence)+ {
+      def to_s
+        elements.collect{|e| e.to_s}.join
+      end
+    }
+  end
+
+  rule heading_sequence
+    heading_1 / heading_2
+  end
+  
+  rule heading_1
+    heading_1_delimiter body:(!heading_delimiter plain_char)+ heading_1_delimiter {
+      def to_s
+        '<h1>' + body.elements.collect{|e| e.plain_char.to_s}.join.strip + '</h1>'
+      end
+    }
+  end
+  
+  rule heading_2
+    heading_2_delimiter body:(!heading_delimiter plain_char)+ heading_2_delimiter {
+      def to_s
+        '<h2>' + body.elements.collect{|e| e.plain_char.to_s}.join.strip + '</h2>'
+      end
+    }
+  end
+  
+  rule paragraph_sequence
     first_paragraph:paragraph other_paragraphs:(paragraph_break content:paragraph)* {
       def paragraphs
         [first_paragraph] + other_paragraphs
@@ -20,14 +48,14 @@ grammar Wikitext
   end
 
   rule paragraph
-    chunk+ {
+    !heading_delimiter chunks:(text_chunk+) {
       def to_s
-        '<p>' + elements.collect{|e| e.to_s}.join + '</p>'
+        '<p>' + chunks.elements.collect{|e| e.to_s}.join + '</p>'
       end
     }
   end
   
-  rule chunk
+  rule text_chunk
     plain_text / bold_text / italic_text
   end
 
@@ -48,7 +76,15 @@ grammar Wikitext
   end
   
   rule plain_text
-    (!delimiter !paragraph_break .)+ {
+    (!delimiter !paragraph_break plain_char)+ {
+      def to_s
+        elements.collect{|e| e.plain_char.to_s}.join
+      end
+    }
+  end
+  
+  rule plain_char
+    . {
       def to_s
         ERB::Util::h text_value
       end
@@ -65,5 +101,17 @@ grammar Wikitext
   
   rule italics_delimiter
     "''"
+  end
+  
+  rule heading_delimiter
+    "\n="
+  end
+
+  rule heading_1_delimiter
+    '='
+  end
+
+  rule heading_2_delimiter
+    '=='
   end
 end

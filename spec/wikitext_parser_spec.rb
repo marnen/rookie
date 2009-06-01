@@ -49,5 +49,22 @@ describe WikitextParser do
         @parser.parse("a\nb").to_s.should_not =~ %r{a.*</p>.*b}
       end
     end
+    
+    describe 'headings' do
+      it "should recognize equals signs for headings" do
+        @parser.parse(<<IN).to_s.should == <<OUT
+= Heading 1 =
+paragraph 1
+== Heading 2 ==
+paragraph 2
+IN
+<h1>Heading 1</h1>
+<p>paragraph 1</p>
+<h2>Heading 2</p>
+<p>paragraph 2</p>
+OUT
+        
+      end
+    end
   end
 end
