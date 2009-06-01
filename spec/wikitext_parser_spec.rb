@@ -25,5 +25,11 @@ describe WikitextParser do
         @parser.parse(%q{Some '''bold''' text.}).to_s.should == 'Some <b>bold</b> text.'
       end
     end
+    
+    describe 'italic text' do
+      it "should recognize 2 apostrophes for italics" do
+        @parser.parse(%q{''italics''}).to_s.should == '<i>italics</i>'
+      end
+    end
   end
 end

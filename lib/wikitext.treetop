@@ -8,13 +8,21 @@ grammar Wikitext
   end
 
   rule chunk
-    bold_text / plain_text
+    plain_text / bold_text / italic_text
   end
 
   rule bold_text
     start:bold_delimiter plain_text end:bold_delimiter {
       def to_s
         '<b>' + plain_text.to_s + '</b>'
+      end
+    }
+  end
+  
+  rule italic_text
+    start:italics_delimiter plain_text end:italics_delimiter {
+      def to_s
+        '<i>' + plain_text.to_s + '</i>'
       end
     }
   end
@@ -28,10 +36,14 @@ grammar Wikitext
   end
   
   rule delimiter
-    bold_delimiter
+    bold_delimiter / italics_delimiter
   end
   
   rule bold_delimiter
     "'''"
+  end
+  
+  rule italics_delimiter
+    "''"
   end
 end
