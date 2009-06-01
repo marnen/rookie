@@ -12,7 +12,11 @@ grammar Wikitext
   end
   
   rule plain_text
-    (!delimiter .)+
+    (!delimiter .)+ {
+      def to_s
+        ERB::Util::h text_value
+      end
+    }
   end
   
   rule delimiter
