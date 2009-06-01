@@ -1,18 +1,42 @@
 grammar Wikitext
+  rule document
+    element+ {
+      def to_s
+        elements.collect{|e| e.to_s}.join
+      end
+    }
+  end
+  
+  rule element
+    paragraph / paragraph_break
+  end
+  
   rule paragraph
     line+ {
       def to_s
-        '<p>' + elements.collect{|e| e.to_s}.join + '</p>'
+        '<p>' + elements.collect{|e| e.to_s}.join.chomp + '</p>'
+      end
+    }
+  end
+  
+  rule paragraph_break
+    blank_line {
+      def to_s
+        text_value
       end
     }
   end
   
   rule line
-    string "\n"? {
+    string newline:("\n"?) {
       def to_s
-        string.to_s
+        string.to_s + newline.text_value
       end
     }
+  end
+  
+  rule blank_line
+    "\n"
   end
   
   rule string

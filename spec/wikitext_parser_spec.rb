@@ -17,6 +17,11 @@ describe WikitextParser do
         @parser.parse('plain text').to_s.should == '<p>plain text</p>'
         @parser.parse('<ht&ml>').to_s.should == '<p>&lt;ht&amp;ml&gt;</p>'
       end
+      
+      it "should preserve newlines" do
+        newline = "new\nline"
+        @parser.parse(newline).to_s.should == "<p>#{newline}</p>"
+      end
     end
     
     describe 'bold text' do
@@ -42,7 +47,7 @@ describe WikitextParser do
     
     describe 'paragraph breaks' do
       it "should start a new paragraph on a double newline" do
-        @parser.parse("a\n\nb").to_s.should =~ %r{<p>a</p>\s*<p>b</p>}
+        @parser.parse("a\n\nb").to_s.should =~ %r{<p>a</p>\s*<p>b</p>}m
       end
       
       it "should not start a new paragraph on a single newline" do
