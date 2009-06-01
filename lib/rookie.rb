@@ -1,4 +1,4 @@
-require 'environment'
+require File.dirname(__FILE__) + '/environment'
 require 'wikitext'
 =begin rdoc
 Wrapper for MediaWiki parser.
