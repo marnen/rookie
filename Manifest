@@ -1,4 +1,6 @@
+lib/rookie.rb
 Manifest
 Rakefile
 README.rdoc
-rookie.kpf
+spec/rookie_spec.rb
+spec/spec_helper.rb

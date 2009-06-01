@@ -9,4 +9,5 @@ Echoe.new('rookie', '0.0.1') do |p|
   p.url = "http://github.com/marnen/rookie"
   p.runtime_dependencies = ['treetop >= 1.2.5']
   p.development_dependencies = ['rspec >= 1.2.6']
+  p.ignore_pattern = ['*.kpf']
 end
