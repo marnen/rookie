@@ -1,0 +1,25 @@
+grammar Wikitext
+  rule document
+    chunk*
+  end
+
+  rule chunk
+    bold_text / plain_text
+  end
+
+  rule bold_text
+    bold_delimiter (!bold_delimiter .)* bold_delimiter
+  end
+  
+  rule plain_text
+    (!delimiter .)+
+  end
+  
+  rule delimiter
+    bold_delimiter
+  end
+  
+  rule bold_delimiter
+    "'''"
+  end
+end

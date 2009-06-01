@@ -18,5 +18,9 @@ describe Rookie do
       string = 'This is a string.'
       Rookie.new(string).to_s.should == string
     end
+    
+    it 'should return the parsed version of any string with markup' do
+      Rookie.new(%q{Here's some '''bold''' text.}).to_s.should == %q{Here's some <b>bold</b> text.}
+    end
   end
 end
