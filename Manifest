@@ -1,6 +1,9 @@
+lib/environment.rb
 lib/rookie.rb
+lib/wikitext.treetop
 Manifest
 Rakefile
 README.rdoc
 spec/rookie_spec.rb
 spec/spec_helper.rb
+spec/wikitext_parser_spec.rb
