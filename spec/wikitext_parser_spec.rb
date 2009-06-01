@@ -31,5 +31,13 @@ describe WikitextParser do
         @parser.parse(%q{''italics''}).to_s.should == '<i>italics</i>'
       end
     end
+    
+    describe 'bold italic text' do
+      it "should recognize arbitrarily nested bold and italics" do
+        @parser.parse(%q{'''''bold italics'''''}).to_s.should =~ %r{^<([bi])><([bi])>bold italics</\2></\1>$}
+        @parser.parse(%q{'''bold with ''italics'' in the middle'''}).to_s.should == '<b>bold with <i>italics</i> in the middle</b>'
+        @parser.parse(%q{''italics with '''bold''' in the middle''}).to_s.should == '<i>italics with <b>bold</b> in the middle</i>'
+      end
+    end
   end
 end
