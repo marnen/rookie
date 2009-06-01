@@ -1,0 +1,11 @@
+= What is Rookie?
+
+Rookie is a project to build a MediaWiki parser in Ruby.
+
+= Why did you call it Rookie?
+
+The name comes from a combination of "<em>Ru</em>by" and "wi<em>ki</em>". It's also my first attempt at writing a parser for anything, so the name seemed appropriate.
+
+= Who are you?
+
+My name is {Marnen Laibow-Koser}[http://www.marnen.org]. I'm the developer of {Quorum}[http://quorum2.sourceforge.net], and I'm writing Rookie in order to be able to use MediaWiki markup in Quorum (and to learn about parser construction...). I'm a Web developer and musician in Albany, New York.
