@@ -1,8 +1,16 @@
 grammar Wikitext
   rule document
-    chunk* {
+    paragraph+ {
       def to_s
         elements.collect{|e| e.to_s}.join
+      end
+    }
+  end
+  
+  rule paragraph
+    chunk+ {
+      def to_s
+        '<p>' + elements.collect{|e| e.to_s}.join + '</p>'
       end
     }
   end

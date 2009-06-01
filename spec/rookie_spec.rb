@@ -14,13 +14,13 @@ describe Rookie do
   end
   
   describe 'to_s' do
-    it 'should return plain strings just the way they were' do
+    it 'should return plain strings just the way they were, wrapped in a paragraph' do
       string = 'This is a string.'
-      Rookie.new(string).to_s.should == string
+      Rookie.new(string).to_s.should == '<p>' + string + '</p>'
     end
     
     it 'should return the parsed version of any string with markup' do
-      Rookie.new(%q{Here's some '''bold''' text.}).to_s.should == %q{Here's some <b>bold</b> text.}
+      Rookie.new(%q{Here's some '''bold''' text.}).to_s.should == %q{<p>Here's some <b>bold</b> text.</p>}
     end
   end
 end
