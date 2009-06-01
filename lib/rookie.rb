@@ -1,4 +1,5 @@
-require 'treetop'
+require 'environment'
+require 'wikitext'
 =begin rdoc
 Wrapper for MediaWiki parser.
 
@@ -13,6 +14,7 @@ class Rookie
   
   # Returns a parsed representation of the input string.
   def to_s
-    @string
+    @parser ||= WikitextParser.new
+    @parsed ||= @parser.parse(@string).to_s
   end
 end
