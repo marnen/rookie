@@ -8,7 +8,7 @@ grammar Wikitext
   end
 
   rule chunk
-    plain_text / bold_text / italic_bold / italic_text
+    plain_text / bold_text / italic_text
   end
 
   rule bold_text
@@ -19,24 +19,10 @@ grammar Wikitext
     }
   end
   
-  rule italic_bold # slight kludge for the case of ''italics with '''bold''' inside''
-    start:italics_delimiter plain_text end:bold_delimiter {
-      def to_s
-        '<i>' + plain_text.to_s + '<b>'
-      end
-    }
-    /
-    start:bold_delimiter plain_text end:italics_delimiter {
-      def to_s
-        '</b>' + plain_text.to_s + '</i>'
-      end
-    }
-  end
-  
   rule italic_text
-    start:italics_delimiter plain_text end:italics_delimiter {
+    start:italics_delimiter !"'" body:(plain_text / bold_text)+ end:italics_delimiter {
       def to_s
-        '<i>' + plain_text.to_s + '</i>'
+        '<i>' + body.elements.collect{|e| e.to_s}.join + '</i>'
       end
     }
   end
