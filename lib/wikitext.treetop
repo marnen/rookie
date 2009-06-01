@@ -1,12 +1,24 @@
 grammar Wikitext
   rule document
-    paragraph+ {
-      def to_s
-        elements.collect{|e| e.to_s}.join
+    first_paragraph:paragraph other_paragraphs:(paragraph_break content:paragraph)* {
+      def paragraphs
+        [first_paragraph] + other_paragraphs
       end
-    }
+      
+      def other_paragraphs
+        super.elements.collect{|p| p.content}
+      end
+ 
+      def to_s
+        paragraphs.collect{|p| p.to_s}.join
+      end
+   }
   end
   
+  rule paragraph_break
+    "\n" "\n"+
+  end
+
   rule paragraph
     chunk+ {
       def to_s
@@ -14,7 +26,7 @@ grammar Wikitext
       end
     }
   end
-
+  
   rule chunk
     plain_text / bold_text / italic_text
   end
@@ -36,7 +48,7 @@ grammar Wikitext
   end
   
   rule plain_text
-    (!delimiter .)+ {
+    (!delimiter !paragraph_break .)+ {
       def to_s
         ERB::Util::h text_value
       end

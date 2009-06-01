@@ -39,5 +39,15 @@ describe WikitextParser do
         @parser.parse(%q{''italics with '''bold''' in the middle''}).to_s.should == '<p><i>italics with <b>bold</b> in the middle</i></p>'
       end
     end
+    
+    describe 'paragraph breaks' do
+      it "should start a new paragraph on a double newline" do
+        @parser.parse("a\n\nb").to_s.should =~ %r{<p>a</p>\s*<p>b</p>}
+      end
+      
+      it "should not start a new paragraph on a single newline" do
+        @parser.parse("a\nb").to_s.should_not =~ %r{a.*</p>.*b}
+      end
+    end
   end
 end
