@@ -1,6 +1,10 @@
 grammar Wikitext
   rule document
-    chunk*
+    chunk* {
+      def to_s
+        elements.collect{|e| e.to_s}.join
+      end
+    }
   end
 
   rule chunk
@@ -8,7 +12,11 @@ grammar Wikitext
   end
 
   rule bold_text
-    bold_delimiter (!bold_delimiter .)* bold_delimiter
+    start:bold_delimiter plain_text end:bold_delimiter {
+      def to_s
+        '<b>' + plain_text.to_s + '</b>'
+      end
+    }
   end
   
   rule plain_text

@@ -20,9 +20,11 @@ describe WikitextParser do
       end
     end
     
-    it "should recognize 3 apostrophes for bold" do
-      @parser.parse(%q{'''bold'''}).should_not be_nil
-      @parser.parse(%q{Some '''bold''' text.}).should_not be_nil
+    describe 'bold text' do
+      it "should recognize 3 apostrophes for bold" do
+        @parser.parse(%q{'''bold'''}).to_s.should == '<b>bold</b>'
+        @parser.parse(%q{Some '''bold''' text.}).to_s.should == 'Some <b>bold</b> text.'
+      end
     end
   end
 end
