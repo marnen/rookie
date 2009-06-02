@@ -127,6 +127,54 @@ IN
 OUT
         end
       end
+      
+      describe 'numbered' do
+        it "should understand numbered lists" do
+          @parser.parse(<<IN).to_s.should =~ <<OUT.forgiving
+# One
+# Two
+# Three
+IN
+<ol>
+  <li>
+    One
+  </li>
+  <li>
+    Two
+  </li>
+  <li>
+    Three
+  </li>
+</ol>
+OUT
+        end
+
+        it "should understand nested numbered lists" do
+          @parser.parse(<<IN).to_s.should =~ <<OUT.forgiving
+# Alpha
+# Beta
+## Beta 1
+# Gamma
+IN
+<ol>
+  <li>
+    Alpha
+  </li>
+  <li>
+    Beta
+    <ol>
+      <li>
+        Beta 1
+      </li>
+    </ol>
+  </li>
+  <li>
+    Gamma
+  </li>
+</ol>
+OUT
+        end
+      end
     end
   end
 end

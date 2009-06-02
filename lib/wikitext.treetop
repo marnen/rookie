@@ -30,7 +30,7 @@ grammar Wikitext
   end  
   
   rule paragraph
-    (!bulleted_list_delimiter formatted_line)+ {
+    (!list_delimiter formatted_line)+ {
       def to_s
         '<p>' + elements.collect{|e| e.formatted_line.to_s}.join.chomp + '</p>' + elements.last.formatted_line.newline.text_value
       end
@@ -82,11 +82,7 @@ grammar Wikitext
   end
   
   rule list
-    bulleted_list
-  end
-  
-  rule bulleted_list
-    bulleted_list_item+ {
+    list_item+ {
       # TODO: clean up the bad indent in the generated code.  Also maybe clean up the whole routine...
       def to_s
         previous = nil
@@ -95,19 +91,19 @@ grammar Wikitext
           if previous.nil?
             # We're on first element
             (e.depth - 1).downto(0) do |d|
-              result << "\n" + e.indent(-d) + "<ul>"
+              result << "\n" + e.indent(-d) + "<#{e.list_tag}>"
             end
           else
             if previous.depth > e.depth
               (previous.depth - e.depth).downto(1) do |d|
-                ["</li>", "</ul>"].each do |s|
+                ["</li>", "</#{e.list_tag}>"].each do |s|
                   result << "\n" + (e.indent(d)) + s
                 end
               end
               result << "\n" + e.indent + "</li>"
             elsif previous.depth < e.depth
               ((e.depth - previous.depth) - 1).downto(0) do |d|
-                result << "\n" + e.indent(-d) + "<ul>"
+                result << "\n" + e.indent(-d) + "<#{e.list_tag}>"
               end
             else
               result << "\n" + e.indent + "</li>"
@@ -118,7 +114,7 @@ grammar Wikitext
         end
         last = elements.last
         0.upto(last.depth - 1) do |d|
-          ["</li>", "</ul>"].each do |s|
+          ["</li>", "</#{last.list_tag}>"].each do |s|
             result << "\n" + last.indent(-d) + s
           end
         end
@@ -127,8 +123,8 @@ grammar Wikitext
     }
   end
   
-  rule bulleted_list_item
-    prefix:(bulleted_list_delimiter+) body:(bulleted_list / formatted_line) {
+  rule list_item
+    prefix:(list_delimiter+) body:(list / formatted_line) {
       def to_s
         <<"EOT".chomp
 #{indent}<li>
@@ -142,6 +138,15 @@ EOT
       
       def indent(adjustment = 0)
         '  ' * (depth - 1 + adjustment)
+      end
+      
+      def list_tag
+        case prefix.elements.last.text_value
+        when '*'
+          'ul'
+        when '#'
+          'ol'
+        end
       end
     }
   end
@@ -194,7 +199,15 @@ EOT
     '='
   end
   
+  rule list_delimiter
+    bulleted_list_delimiter / numbered_list_delimiter
+  end
+  
   rule bulleted_list_delimiter
     '*'
+  end
+  
+  rule numbered_list_delimiter
+    '#'
   end
 end
