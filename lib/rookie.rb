@@ -4,8 +4,8 @@ require 'wikitext'
 Wrapper for MediaWiki parser.
 
 Usage:
- Rookie.new('string').to_s # => 'string'
- Rookie.new("Here's some '''bold''' text.").to_s # => "Here's some <b>bold</b> text."
+ Rookie.new('string').to_s # => '<p>string</p>'
+ Rookie.new("Here's some '''bold''' text.").to_s # => "<p>Here's some <b>bold</b> text.</p>"
 =end
 class Rookie
   def initialize(string)
