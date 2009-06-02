@@ -141,11 +141,11 @@ EOT
       end
       
       def list_tag
-        # TODO: Instead of comparing text values, can we match for the appropriate list delimiter construct?
-        case prefix.elements.last.text_value
-        when '*'
+        # TODO: Can we match for the appropriate list delimiter construct directly instead of using a surrogate method?
+        case prefix.elements.last.list_type
+        when :bulleted
           'ul'
-        when '#'
+        when :numbered
           'ol'
         end
       end
@@ -205,10 +205,18 @@ EOT
   end
   
   rule bulleted_list_prefix
-    '*'
+    '*' {
+      def list_type
+        :bulleted
+      end
+    }
   end
   
   rule numbered_list_prefix
-    '#'
+    '#' {
+      def list_type
+        :numbered
+      end
+    }
   end
 end
