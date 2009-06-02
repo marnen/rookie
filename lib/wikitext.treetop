@@ -8,7 +8,7 @@ grammar Wikitext
   end
   
   rule element
-    heading / paragraph / paragraph_break
+    heading / paragraph / paragraph_break / list
   end
   
   rule heading
@@ -30,9 +30,9 @@ grammar Wikitext
   end  
   
   rule paragraph
-    formatted_line+ {
+    (!bulleted_list_delimiter formatted_line)+ {
       def to_s
-        '<p>' + elements.collect{|e| e.to_s}.join.chomp + '</p>' + elements.last.newline.text_value
+        '<p>' + elements.collect{|e| e.formatted_line.to_s}.join.chomp + '</p>' + elements.last.formatted_line.newline.text_value
       end
     }
   end
@@ -40,7 +40,7 @@ grammar Wikitext
   rule formatted_line
     !heading_delimiter chunks:(formatted_string+) newline:(newline_or_eof) {
       def to_s
-        chunks.elements.collect{|c| c.to_s}.join + newline.text_value
+        chunks.elements.collect{|c| c.to_s}.join.strip + newline.text_value
       end
     }
   end
@@ -77,6 +77,30 @@ grammar Wikitext
     blank_line {
       def to_s
         text_value
+      end
+    }
+  end
+  
+  rule list
+    bulleted_list
+  end
+  
+  rule bulleted_list
+    bulleted_list_item+ {
+      def to_s
+        result = "<ul>\n"
+        result << elements.collect do |e|
+          '  ' + e.to_s + "\n"
+        end.join
+        result << "</ul>\n"
+      end
+    }
+  end
+  
+  rule bulleted_list_item
+    bulleted_list_delimiter formatted_line {
+      def to_s
+        '<li>' + formatted_line.to_s.chomp + '</li>'
       end
     }
   end
@@ -127,5 +151,9 @@ grammar Wikitext
   
   rule heading_delimiter
     '='
+  end
+  
+  rule bulleted_list_delimiter
+    '*'
   end
 end

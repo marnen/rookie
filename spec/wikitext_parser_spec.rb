@@ -68,7 +68,24 @@ IN
 <h2>Heading 2</h2>
 <p>paragraph 2</p>
 OUT
-        
+      end
+    end
+    
+    describe 'lists' do
+      describe 'bulleted' do
+        it "should understand bulleted lists" do
+          @parser.parse(<<IN).to_s.should == <<OUT
+* One
+* Two
+* Three
+IN
+<ul>
+  <li>One</li>
+  <li>Two</li>
+  <li>Three</li>
+</ul>
+OUT
+        end
       end
     end
   end
