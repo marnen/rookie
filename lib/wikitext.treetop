@@ -98,12 +98,11 @@ grammar Wikitext
   end
   
   rule bulleted_list_item
-    bulleted_list_delimiter formatted_line {
+    bulleted_list_delimiter body:(bulleted_list / formatted_line) {
       def to_s
-        '<li>' + formatted_line.to_s.chomp + '</li>'
+        '<li>' + body.to_s.chomp + '</li>'
       end
-    }
-  end
+    }  end
   
   rule line
     string newline:newline_or_eof {
