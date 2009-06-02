@@ -90,35 +90,39 @@ grammar Wikitext
       # TODO: clean up the bad indent in the generated code.  Also maybe clean up the whole routine...
       def to_s
         previous = nil
-        indent = '  '
         result = ''
         elements.each do |e|
           if previous.nil?
             # We're on first element
-            0.upto(e.depth - 1) do |d|
-              result << "\n" + (indent * d) + "<ul>"
+            (e.depth - 1).downto(0) do |d|
+              result << "\n" + e.indent(-d) + "<ul>"
             end
           else
             if previous.depth > e.depth
-              previous.depth.downto(e.depth + 1) do |d|
-                result << "\n" + (indent * (d - 1)) + "</li></ul>"
+              (previous.depth - e.depth).downto(1) do |d|
+                ["</li>", "</ul>"].each do |s|
+                  result << "\n" + (e.indent(d)) + s
+                end
               end
-              result << "\n" + (indent * e.depth) + "</li>"
+              result << "\n" + e.indent + "</li>"
             elsif previous.depth < e.depth
-              previous.depth.upto(e.depth - 1) do |d|
-                result << "\n" + (indent * d) + "<ul>"
+              ((e.depth - previous.depth) - 1).downto(0) do |d|
+                result << "\n" + e.indent(-d) + "<ul>"
               end
             else
-              result << "\n" + (indent * (e.depth - 1)) + "</li>"
+              result << "\n" + e.indent + "</li>"
             end
           end
           result << "\n" + e.to_s
           previous = e.clone
         end
-        (elements.last.depth - 1).downto(0) do |d|
-          result << "\n" + (indent * d) + "</li></ul>\n"
+        last = elements.last
+        0.upto(last.depth - 1) do |d|
+          ["</li>", "</ul>"].each do |s|
+            result << "\n" + last.indent(-d) + s
+          end
         end
-        result
+        result << "\n"
       end
     }
   end
@@ -126,11 +130,18 @@ grammar Wikitext
   rule bulleted_list_item
     prefix:(bulleted_list_delimiter+) body:(bulleted_list / formatted_line) {
       def to_s
-        '<li>' + body.to_s.chomp
+        <<"EOT".chomp
+#{indent}<li>
+#{indent}  #{body.to_s.chomp}
+EOT
       end
       
       def depth
         prefix.text_value.length
+      end
+      
+      def indent(adjustment = 0)
+        '  ' * (depth - 1 + adjustment)
       end
     }
   end
