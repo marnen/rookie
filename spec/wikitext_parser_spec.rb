@@ -175,6 +175,34 @@ IN
 OUT
         end
       end
+      
+      describe 'mixed' do
+        it "should understand nested mixed lists" do
+          @parser.parse(<<IN).to_s.should =~ <<OUT.forgiving
+* Alpha
+* Beta
+*# Beta 1
+* Gamma
+IN
+<ul>
+  <li>
+    Alpha
+  </li>
+  <li>
+    Beta
+    <ol>
+      <li>
+        Beta 1
+      </li>
+    </ol>
+  </li>
+  <li>
+    Gamma
+  </li>
+</ul>
+OUT
+        end
+      end
     end
   end
 end

@@ -96,7 +96,7 @@ grammar Wikitext
           else
             if previous.depth > e.depth
               (previous.depth - e.depth).downto(1) do |d|
-                ["</li>", "</#{e.list_tag}>"].each do |s|
+                ["</li>", "</#{previous.list_tag}>"].each do |s|
                   result << "\n" + (e.indent(d)) + s
                 end
               end
