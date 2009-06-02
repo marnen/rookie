@@ -12,9 +12,45 @@ grammar Wikitext
   end
   
   rule paragraph
-    line+ {
+    formatted_line+ {
       def to_s
         '<p>' + elements.collect{|e| e.to_s}.join.chomp + '</p>'
+      end
+    }
+  end
+  
+  rule formatted_line
+    chunks:(formatted_string+) newline:("\n"?) {
+      def to_s
+        chunks.elements.collect{|c| c.to_s}.join + newline.text_value
+      end
+    }
+  end
+    
+  rule formatted_string
+    bold_string / italic_string / plain_string
+  end
+  
+  rule bold_string
+    start:bold_delimiter body:(italic_string / plain_string)+ end:bold_delimiter {
+      def to_s
+        '<b>' + body.elements.collect{|e| e.to_s}.join + '</b>'
+      end
+    }
+  end
+  
+  rule italic_string
+    start:italics_delimiter !"'" body:(bold_string / plain_string)+ end:italics_delimiter {
+      def to_s
+        '<i>' + body.elements.collect{|e| e.to_s}.join + '</i>'
+      end
+    }
+  end
+  
+  rule plain_string
+    (!delimiter plain_char)+ {
+      def to_s
+        elements.collect{|e| e.plain_char.to_s}.join
       end
     }
   end
@@ -53,5 +89,17 @@ grammar Wikitext
         ERB::Util::h text_value
       end
     }
+  end
+  
+  rule delimiter
+    bold_delimiter / italics_delimiter
+  end
+
+  rule bold_delimiter
+    "'''"
+  end
+  
+  rule italics_delimiter
+    "''"
   end
 end
