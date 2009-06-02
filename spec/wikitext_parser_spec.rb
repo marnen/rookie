@@ -65,7 +65,7 @@ paragraph 2
 IN
 <h1>Heading 1</h1>
 <p>paragraph 1</p>
-<h2>Heading 2</p>
+<h2>Heading 2</h2>
 <p>paragraph 2</p>
 OUT
         

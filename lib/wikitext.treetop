@@ -8,19 +8,37 @@ grammar Wikitext
   end
   
   rule element
-    paragraph / paragraph_break
+    heading / paragraph / paragraph_break
   end
+  
+  rule heading
+    heading_line
+  end
+  
+  rule heading_line
+    start:heading_delimiter+ body:(!heading_end plain_char)* end:heading_end {
+      def to_s
+        depth = [start.text_value.length, self.end.text_value.chomp.length].min
+        tag = "h#{depth}"
+        "<#{tag}>#{body.elements.collect{|e| e.plain_char.to_s}.join.strip}</#{tag}>" + self.end.newline_or_eof.text_value
+      end
+    }
+  end
+  
+  rule heading_end
+    heading_delimiter+ newline_or_eof
+  end  
   
   rule paragraph
     formatted_line+ {
       def to_s
-        '<p>' + elements.collect{|e| e.to_s}.join.chomp + '</p>'
+        '<p>' + elements.collect{|e| e.to_s}.join.chomp + '</p>' + elements.last.newline.text_value
       end
     }
   end
   
   rule formatted_line
-    chunks:(formatted_string+) newline:("\n"?) {
+    !heading_delimiter chunks:(formatted_string+) newline:(newline_or_eof) {
       def to_s
         chunks.elements.collect{|c| c.to_s}.join + newline.text_value
       end
@@ -64,7 +82,7 @@ grammar Wikitext
   end
   
   rule line
-    string newline:("\n"?) {
+    string newline:newline_or_eof {
       def to_s
         string.to_s + newline.text_value
       end
@@ -91,6 +109,10 @@ grammar Wikitext
     }
   end
   
+  rule newline_or_eof
+    ("\n"?)
+  end
+  
   rule delimiter
     bold_delimiter / italics_delimiter
   end
@@ -101,5 +123,9 @@ grammar Wikitext
   
   rule italics_delimiter
     "''"
+  end
+  
+  rule heading_delimiter
+    '='
   end
 end
