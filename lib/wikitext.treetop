@@ -30,7 +30,7 @@ grammar Wikitext
   end  
   
   rule paragraph
-    (!list_delimiter formatted_line)+ {
+    (!list_prefix formatted_line)+ {
       def to_s
         '<p>' + elements.collect{|e| e.formatted_line.to_s}.join.chomp + '</p>' + elements.last.formatted_line.newline.text_value
       end
@@ -124,7 +124,7 @@ grammar Wikitext
   end
   
   rule list_item
-    prefix:(list_delimiter+) body:(list / formatted_line) {
+    prefix:(list_prefix+) body:(list / formatted_line) {
       def to_s
         <<"EOT".chomp
 #{indent}<li>
@@ -141,6 +141,7 @@ EOT
       end
       
       def list_tag
+        # TODO: Instead of comparing text values, can we match for the appropriate list delimiter construct?
         case prefix.elements.last.text_value
         when '*'
           'ul'
@@ -199,15 +200,15 @@ EOT
     '='
   end
   
-  rule list_delimiter
-    bulleted_list_delimiter / numbered_list_delimiter
+  rule list_prefix
+    bulleted_list_prefix / numbered_list_prefix
   end
   
-  rule bulleted_list_delimiter
+  rule bulleted_list_prefix
     '*'
   end
   
-  rule numbered_list_delimiter
+  rule numbered_list_prefix
     '#'
   end
 end
