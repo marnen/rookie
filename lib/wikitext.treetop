@@ -88,21 +88,51 @@ grammar Wikitext
   rule bulleted_list
     bulleted_list_item+ {
       def to_s
-        result = "<ul>\n"
-        result << elements.collect do |e|
-          '  ' + e.to_s + "\n"
-        end.join
-        result << "</ul>\n"
+        previous = nil
+        indent = '  '
+        result = ''
+        elements.each do |e|
+          if previous.nil?
+            # We're on first element
+            0.upto(e.depth - 1) do |d|
+              result << "\n" + (indent * d) + "<ul>"
+            end
+          else
+            if previous.depth > e.depth
+              previous.depth.downto(e.depth + 1) do |d|
+                result << "\n" + (indent * (d - 1)) + "</li></ul>"
+              end
+              result << "\n" + (indent * e.depth) + "</li>"
+            elsif previous.depth < e.depth
+              previous.depth.upto(e.depth - 1) do |d|
+                result << "\n" + (indent * d) + "<ul>"
+              end
+            else
+              result << "\n" + (indent * (e.depth - 1)) + "</li>"
+            end
+          end
+          result << "\n" + e.to_s
+          previous = e.clone
+        end
+        (elements.last.depth - 1).downto(0) do |d|
+          result << "\n" + (indent * d) + "</li></ul>\n"
+        end
+        result
       end
     }
   end
   
   rule bulleted_list_item
-    bulleted_list_delimiter body:(bulleted_list / formatted_line) {
+    prefix:(bulleted_list_delimiter+) body:(bulleted_list / formatted_line) {
       def to_s
-        '<li>' + body.to_s.chomp + '</li>'
+        '<li>' + body.to_s.chomp
       end
-    }  end
+      
+      def depth
+        prefix.text_value.length
+      end
+    }
+  end
   
   rule line
     string newline:newline_or_eof {

@@ -88,20 +88,27 @@ OUT
         end
         
         it "should understand nested bulleted lists" do
-          @parser.parse(<<IN).to_s.should == %r{#{<<OUT.gsub(%r{\s+}, '\s*')}}
+          @parser.parse(<<IN).to_s.should =~ %r{#{<<OUT.gsub(%r[\s{2,}|(\s*\n\s*)]m, '\s*')}}m
 * Alpha
 * Beta
 ** Beta 1
 * Gamma
 IN
 <ul>
-  <li>Alpha</li>
-  <li>Beta
+  <li>
+    Alpha
+  </li>
+  <li>
+    Beta
     <ul>
-      <li>Beta 1</li>
+      <li>
+        Beta 1
+      </li>
     </ul>
   </li>
-  <li>Gamma</li>
+  <li>
+    Gamma
+  </li>
 </ul>
 OUT
         end
