@@ -87,6 +87,7 @@ grammar Wikitext
   
   rule bulleted_list
     bulleted_list_item+ {
+      # TODO: clean up the bad indent in the generated code.  Also maybe clean up the whole routine...
       def to_s
         previous = nil
         indent = '  '

@@ -1,6 +1,14 @@
 require File.dirname(__FILE__) + '/spec_helper'
 require 'wikitext'
 
+class String
+  # Make a string matcher into a more forgiving regex matcher.
+  # TODO: use Hpricot or Nokogiri instead of bastardizing HTML like this. :)
+  def forgiving
+    %r{#{self.gsub(%r[\s{2,}|(\s*\n\s*)]m, '\s*')}}m
+  end
+end
+
 describe WikitextParser do
   it 'should be a valid class' do
     WikitextParser.class.should == Class
@@ -74,21 +82,27 @@ OUT
     describe 'lists' do
       describe 'bulleted' do
         it "should understand bulleted lists" do
-          @parser.parse(<<IN).to_s.should == <<OUT
+          @parser.parse(<<IN).to_s.should =~ <<OUT.forgiving
 * One
 * Two
 * Three
 IN
 <ul>
-  <li>One</li>
-  <li>Two</li>
-  <li>Three</li>
+  <li>
+    One
+  </li>
+  <li>
+    Two
+  </li>
+  <li>
+    Three
+  </li>
 </ul>
 OUT
         end
         
         it "should understand nested bulleted lists" do
-          @parser.parse(<<IN).to_s.should =~ %r{#{<<OUT.gsub(%r[\s{2,}|(\s*\n\s*)]m, '\s*')}}m
+          @parser.parse(<<IN).to_s.should =~ <<OUT.forgiving
 * Alpha
 * Beta
 ** Beta 1
