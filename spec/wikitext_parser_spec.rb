@@ -212,6 +212,18 @@ OUT
         @parser.parse("[#{url}]").to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
         @parser.parse("[#{url} Google search]").to_s.should =~ %r{<a href=(['"])#{url}\1>Google search</a>}
       end
+      
+      describe 'internal' do
+        it "should parse internal links" do
+          # TODO: Should we prefix a base path?
+          @parser.parse("[[internal]]").to_s.should =~ %r{<a href=(['"])internal\1>internal</a>}
+        end
+        
+        it "should change spaces into underscores" do
+          # TODO: This should probably be a configurable option.
+          @parser.parse("[[link with space]]").to_s.should =~ %r{<a href=(['"])link_with_space\1>link with space</a>}
+        end
+      end
     end
   end
 end

@@ -66,7 +66,20 @@ grammar Wikitext
   end
   
   rule link
-    start:link_prefix url:url_string title:(' '+ body:plain_string)? end:link_suffix {
+    internal_link / external_link
+  end
+  
+  rule internal_link
+    start:internal_link_prefix body:plain_string end:internal_link_suffix {
+      def to_s
+        encoded = body.to_s.gsub(' ', '_')
+        "<a href='#{encoded}'>#{body}</a>"
+      end
+    }
+  end
+  
+  rule external_link
+    start:external_link_prefix url:url_string title:(' '+ body:plain_string)? end:external_link_suffix {
       def to_s
         text = title.elements ? title.body : url
         "<a href='#{url}'>#{text}</a>"
@@ -226,10 +239,26 @@ EOT
   end
 
   rule link_prefix
+    internal_link_prefix / external_link_prefix
+  end
+  
+  rule internal_link_prefix
+    '[['
+  end
+  
+  rule external_link_prefix
     '['
   end
   
   rule link_suffix
+    internal_link_suffix / external_link_suffix
+  end
+  
+  rule internal_link_suffix
+    ']]'
+  end
+  
+  rule external_link_suffix
     ']'
   end
   
