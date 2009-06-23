@@ -204,5 +204,14 @@ OUT
         end
       end
     end
+  
+    describe 'links' do
+      it "should parse external links" do
+        # TODO: If no title is supplied, we should follow MediaWiki behavior of assigning a number, not just use the URL.
+        url = "http://www.google.com"
+        @parser.parse("[#{url}]").to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
+        # @parser.parse("[#{url} Google]").to_s.should =~ %r{<a href=(['"])#{url}\1>}
+      end
+    end
   end
 end

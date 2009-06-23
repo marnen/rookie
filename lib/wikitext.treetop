@@ -46,7 +46,7 @@ grammar Wikitext
   end
     
   rule formatted_string
-    bold_string / italic_string / plain_string
+    bold_string / italic_string / link / plain_string
   end
   
   rule bold_string
@@ -61,6 +61,14 @@ grammar Wikitext
     start:italics_delimiter !"'" body:(bold_string / plain_string)+ end:italics_delimiter {
       def to_s
         '<i>' + body.elements.collect{|e| e.to_s}.join + '</i>'
+      end
+    }
+  end
+  
+  rule link
+    start:link_prefix body:plain_string end:link_suffix {
+      def to_s
+        "<a href='#{body}'>#{body}</a>"
       end
     }
   end
@@ -185,15 +193,27 @@ EOT
   end
   
   rule delimiter
-    bold_delimiter / italics_delimiter
+    bold_delimiter / italics_delimiter / link_delimiter
   end
-
+  
   rule bold_delimiter
     "'''"
   end
   
   rule italics_delimiter
     "''"
+  end
+  
+  rule link_delimiter
+    link_prefix / link_suffix
+  end
+
+  rule link_prefix
+    '['
+  end
+  
+  rule link_suffix
+    ']'
   end
   
   rule heading_delimiter
