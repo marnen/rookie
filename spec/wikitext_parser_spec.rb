@@ -210,7 +210,7 @@ OUT
         # TODO: If no title is supplied, we should follow MediaWiki behavior of assigning a number, not just use the URL.
         url = "http://www.google.com"
         @parser.parse("[#{url}]").to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
-        # @parser.parse("[#{url} Google]").to_s.should =~ %r{<a href=(['"])#{url}\1>}
+        @parser.parse("[#{url} Google search]").to_s.should =~ %r{<a href=(['"])#{url}\1>Google search</a>}
       end
     end
   end

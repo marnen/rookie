@@ -66,9 +66,10 @@ grammar Wikitext
   end
   
   rule link
-    start:link_prefix body:plain_string end:link_suffix {
+    start:link_prefix url:url_string title:(' '+ body:plain_string)? end:link_suffix {
       def to_s
-        "<a href='#{body}'>#{body}</a>"
+        text = title.elements ? title.body : url
+        "<a href='#{url}'>#{text}</a>"
       end
     }
   end
@@ -184,6 +185,22 @@ EOT
     [^\n] {
       def to_s
         ERB::Util::h text_value
+      end
+    }
+  end
+  
+  rule url_string
+    url_char+ {
+      def to_s
+        text_value
+      end
+    }
+  end
+  
+  rule url_char
+    !([\s] / link_delimiter) . {
+      def to_s
+        text_value
       end
     }
   end
