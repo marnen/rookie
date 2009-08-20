@@ -206,11 +206,18 @@ OUT
     end
   
     describe 'links' do
-      it "should parse external links" do
-        # TODO: If no title is supplied, we should follow MediaWiki behavior of assigning a number, not just use the URL.
-        url = "http://www.google.com"
-        @parser.parse("[#{url}]").to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
-        @parser.parse("[#{url} Google search]").to_s.should =~ %r{<a href=(['"])#{url}\1>Google search</a>}
+      describe 'external' do
+        it "should parse bracketed external links" do
+          # TODO: If no title is supplied, we should follow MediaWiki behavior of assigning a number, not just use the URL.
+          url = "http://www.google.com"
+          @parser.parse("[#{url}]").to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
+          @parser.parse("[#{url} Google search]").to_s.should =~ %r{<a href=(['"])#{url}\1>Google search</a>}
+        end
+        
+        it "should make bare URLs into links" do
+          url = "http://www.google.com"
+          @parser.parse(url).to_s.should =~ %r{<a href=(['"])#{url}\1>#{url}</a>}
+        end
       end
       
       describe 'internal' do
@@ -222,6 +229,12 @@ OUT
         it "should change spaces into underscores" do
           # TODO: This should probably be a configurable option.
           @parser.parse("[[link with space]]").to_s.should =~ %r{<a href=(['"])link_with_space\1>link with space</a>}
+        end
+        
+        it "should URL-encode non-URL-safe characters" do
+          pending "Need to figure out why this isn't working..." do
+            @parser.parse("[[München]]").to_s.should =~ %r{<a href=(['"])M(%[\dA-Fa-f]{2})+nchen\1>München</a>}
+          end
         end
       end
     end

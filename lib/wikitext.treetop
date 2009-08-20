@@ -79,12 +79,28 @@ grammar Wikitext
   end
   
   rule external_link
+    bracketed_external_link / bare_url
+  end
+  
+  rule bracketed_external_link
     start:external_link_prefix url:url_string title:(' '+ body:plain_string)? end:external_link_suffix {
       def to_s
         text = title.elements ? title.body : url
         "<a href='#{url}'>#{text}</a>"
       end
     }
+  end
+  
+  rule bare_url
+    &protocol_specifier url:url_string {
+      def to_s
+        "<a href='#{url}'>#{ERB::Util::h url}</a>" # TODO: unify with bracketed_external_link?
+      end
+    }
+  end
+  
+  rule protocol_specifier
+    "http://" / "ftp://"
   end
   
   rule plain_string
