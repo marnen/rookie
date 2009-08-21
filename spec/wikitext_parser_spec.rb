@@ -232,7 +232,7 @@ OUT
         end
         
         it "should URL-encode non-URL-safe characters" do
-          pending "Need to figure out why this isn't working..." do
+          pending "This spec won't work until we can make plain_char match multibyte characters." do
             @parser.parse("[[München]]").to_s.should =~ %r{<a href=(['"])M(%[\dA-Fa-f]{2})+nchen\1>München</a>}
           end
         end
